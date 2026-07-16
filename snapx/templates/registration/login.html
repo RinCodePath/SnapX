@@ -1,0 +1,44 @@
+{% extends 'snapx/base.html' %}
+
+{% block title %}SnapX — вход{% endblock %}
+
+{% block content %}
+  <div class="form-page">
+    <div class="form-card">
+      <h1>Вход</h1>
+      <p class="form-card__subtitle">Рады видеть вас снова.</p>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% for field in form %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <ul class="errorlist">
+                {% for error in field.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+          <ul class="errorlist">
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <button type="submit" class="btn btn--solid">Войти</button>
+      </form>
+
+      <p class="form-card__footer">
+        Нет аккаунта? <a href="{% url 'register' %}">Зарегистрируйтесь</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

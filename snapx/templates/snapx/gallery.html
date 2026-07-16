@@ -1,0 +1,60 @@
+{% extends 'snapx/base.html' %}
+{% load static %}
+
+{% block title %}SnapX — галерея{% endblock %}
+
+{% block content %}
+
+  {# Приветственный баннер показываем только неавторизованным пользователям #}
+  {% if is_new_visitor %}
+    <section class="hero">
+      <div class="hero__content">
+        <p class="hero__eyebrow">Добро пожаловать</p>
+        <h1 class="hero__title">SnapX</h1>
+        <p class="hero__text">
+          Добро пожаловать в SnapX! Зарегистрируйтесь, чтобы делиться своими фото
+          и собирать собственную ленту снимков.
+        </p>
+        <div class="hero__actions">
+          <a href="{% url 'register' %}" class="btn btn--solid">Создать аккаунт</a>
+          <a href="{% url 'login' %}" class="btn btn--ghost">У меня уже есть аккаунт</a>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <div class="gallery-toolbar">
+    <h1>Все фотографии</h1>
+    <span class="count">{{ photos|length }} кадр(ов)</span>
+  </div>
+
+  {% if photos %}
+    <div class="gallery-grid">
+      {% for photo in photos %}
+        <article class="frame-card">
+          <div class="frame-card__strip"></div>
+          <div class="frame-card__media">
+            <img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">
+            <span class="frame-card__number">№ {{ forloop.counter|stringformat:"03d" }}</span>
+          </div>
+          <div class="frame-card__strip"></div>
+          <div class="frame-card__body">
+            <h2 class="frame-card__title">{{ photo.title }}</h2>
+            <div class="frame-card__meta">
+              <span class="frame-card__category">{{ photo.get_category_display }}</span>
+              <span>{{ photo.author.username }}</span>
+            </div>
+            {% if photo.description %}
+              <p class="frame-card__desc">{{ photo.description }}</p>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      Пока здесь нет ни одного фото. Станьте первым, кто поделится снимком!
+    </div>
+  {% endif %}
+
+{% endblock %}

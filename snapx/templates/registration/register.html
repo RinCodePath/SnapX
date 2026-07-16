@@ -1,0 +1,47 @@
+{% extends 'snapx/base.html' %}
+
+{% block title %}SnapX — регистрация{% endblock %}
+
+{% block content %}
+  <div class="form-page">
+    <div class="form-card">
+      <h1>Регистрация</h1>
+      <p class="form-card__subtitle">Создайте аккаунт, чтобы загружать свои фото.</p>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% for field in form %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <p class="help-text">{{ field.help_text }}</p>
+            {% endif %}
+            {% if field.errors %}
+              <ul class="errorlist">
+                {% for error in field.errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+          <ul class="errorlist">
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <button type="submit" class="btn btn--solid">Зарегистрироваться</button>
+      </form>
+
+      <p class="form-card__footer">
+        Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}
