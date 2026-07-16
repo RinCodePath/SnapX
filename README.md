@@ -1,107 +1,123 @@
-# SnapX — руководство по внедрению
+# 📸 SnapX
 
-Все файлы в этом архиве проверены end-to-end (регистрация → автологин →
-логин → загрузка фото → проверка автора → отображение в галерее → логаут)
-через `django.test.Client` на Django 6.0, а модели и код прошли
-`manage.py check` и `flake8`. Ниже — как встроить их в существующий проект.
+Современная фотогалерея, созданная на Django.
 
-## Структура файлов
+SnapX позволяет пользователям регистрироваться, загружать фотографии, просматривать общую галерею и управлять аккаунтом через встроенную систему аутентификации Django.
 
-```
-snapx/
-├── models.py                          → snapx/models.py (заменить)
-├── forms.py                           → snapx/forms.py (заменить/создать)
-├── views.py                           → snapx/views.py (заменить)
-├── urls.py                            → snapx/urls.py (создать, если нет)
-├── static/snapx/css/styles.css        → snapx/static/snapx/css/styles.css
-└── templates/
-    ├── snapx/base.html                → snapx/templates/snapx/base.html
-    ├── snapx/gallery.html             → snapx/templates/snapx/gallery.html
-    ├── snapx/add_photo.html           → snapx/templates/snapx/add_photo.html
-    ├── registration/login.html        → snapx/templates/registration/login.html
-    └── registration/register.html     → snapx/templates/registration/register.html
+---
 
-config_reference/
-├── urls.py                            → пример корневого urls.py проекта
-└── settings_snippet.py                → что добавить в settings.py
-```
+## Возможности
 
-`registration/` — стандартное имя каталога, которое ожидает система
-аутентификации Django, поэтому оно вынесено из `snapx/` на уровень
-общих шаблонов приложения.
+- регистрация пользователей
+- вход и выход из аккаунта
+- автоматический вход после регистрации
+- загрузка фотографий
+- категории изображений
+- описание фотографий
+- отображение автора снимка
+- приветственный баннер для новых пользователей
+- административная панель Django
+- адаптивный тёмный интерфейс
+- автоматические тесты
 
-## Шаг 1. Модель `Photo` (`models.py`)
+---
 
-Поле `author` — это `ForeignKey` на `settings.AUTH_USER_MODEL` с
-`on_delete=models.CASCADE`. Если в вашей текущей модели уже есть другие
-поля (например, свои категории или дополнительные атрибуты) — перенесите
-их из старого файла, сохранив блок с `author` как есть.
+## Скриншоты
 
-После замены файла выполните миграцию:
+<img width="480" height="640" alt="изображение" src="https://github.com/user-attachments/assets/be2c611f-0b0b-4b00-926b-c15b3cbedf5c" />
 
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
 
-Если в базе уже есть фото без автора, `makemigrations` спросит дефолт —
-для тестовой базы проще всего временно сделать `author` nullable, дозаполнить
-вручную и потом убрать `null=True`.
+### Главная страница
 
-## Шаг 2. Формы (`forms.py`)
+<img width="888" height="991" alt="gl1" src="https://github.com/user-attachments/assets/4e0378a1-e67e-4fd6-ac30-9dd36a9ad3e0" />
 
-- `PhotoForm` — `ModelForm` без поля `author` (`fields = ['title', 'category', 'image', 'description']`), плюс базовая валидация размера файла (до 5 МБ).
-- `RegisterForm` — обёртка над `UserCreationForm` с добавленным `email` и русскими подписями полей.
-- `LoginForm` — обёртка над `AuthenticationForm`, тоже с русскими подписями (по умолчанию Django отдаёт их на английском независимо от `LANGUAGE_CODE`).
 
-## Шаг 3. Шаблоны и статика
+### Авторизация
 
-CSS вынесен в `snapx/static/snapx/css/styles.css` — это единственный файл
-стилей, инлайн-атрибутов `style=""` в шаблонах нет. Дизайн — тёмная
-"фотолаборатория": карточки в галерее оформлены как кадры плёнки с
-перфорацией, приветственный баннер — как первый кадр контрольного листа.
-Всё завязано на CSS-переменных в `:root`, так что палитру легко поменять
-в одном месте.
+<img width="883" height="982" alt="log" src="https://github.com/user-attachments/assets/3bd0a963-9043-4090-bbe5-accd60d76110" />
 
-Убедитесь, что в `settings.py` есть `'django.contrib.staticfiles'` в
-`INSTALLED_APPS` — Django автоматически найдёт `snapx/static/...`, так
-как приложение зарегистрировано.
 
-## Шаг 4. Представления (`views.py`)
+### Регистрация
 
-- `gallery` — отдаёт список фото и флаг `is_new_visitor` (True, если пользователь не авторизован) — по нему в `gallery.html` показывается hero-баннер.
-- `add_photo` — защищена `@login_required(login_url='login')`; автор всегда берётся из `request.user`, а не из формы.
-- `register_user` — создаёт пользователя и сразу вызывает `login()`.
-- `login_user` / `logout_user` — стандартный вход/выход с редиректом на галерею.
+<img width="880" height="988" alt="reg" src="https://github.com/user-attachments/assets/e163fa77-043e-4f47-af6c-a342506f03c6" />
 
-## Шаг 5. Маршрутизация
 
-`snapx/urls.py` — маршруты приложения (`''`, `add/`, `register/`,
-`login/`, `logout/`). В `config_reference/urls.py` показано, как
-подключить их в корневом `urls.py` проекта через `include('snapx.urls')`
-и как раздать медиа-файлы в режиме разработки (`static(settings.MEDIA_URL, ...)`).
+### Добавление фотографии
 
-В `config_reference/settings_snippet.py` — что добавить в `settings.py`:
-приложение `snapx` в `INSTALLED_APPS`, `MEDIA_URL`/`MEDIA_ROOT` и
-`LOGIN_URL`/`LOGIN_REDIRECT_URL`/`LOGOUT_REDIRECT_URL`.
+<img width="883" height="977" alt="cr" src="https://github.com/user-attachments/assets/f3d3e5e9-90fa-4ba1-879a-bbc0b2f1db98" />
 
-## Проверка после установки
+
+### Дополнительно
+
+<img width="889" height="994" alt="tab" src="https://github.com/user-attachments/assets/103f16ac-f56e-43db-b7ec-77fabdf22af9" />
+
+
+---
+
+## Технологии
+
+- Python 3
+- Django
+- SQLite
+- HTML5
+- CSS3
+
+---
+
+## Запуск проекта
 
 ```bash
-python manage.py check
-python manage.py makemigrations
+git clone https://github.com/USERNAME/snapx.git
+cd snapx
+
+python -m venv .venv
+
+source .venv/bin/activate
+
+pip install -r requirements.txt
+
 python manage.py migrate
+
 python manage.py runserver
 ```
 
-Откройте `/` — должен появиться приветственный баннер (вы не авторизованы).
-Зарегистрируйтесь на `/register/` — баннер исчезнет, появится пункт
-«Добавить фото». Загрузите снимок на `/add/` — он появится в галерее
-с вашим именем как автора.
+После запуска откройте
 
-## Что можно донастроить самостоятельно
+```
+http://127.0.0.1:8000/
+```
 
-- **Категории** — список `CATEGORY_CHOICES` в `models.py`.
-- **Ограничение 5 МБ на файл** — метод `clean_image` в `forms.py`.
-- **Заглавное фото hero-баннера** — сейчас ссылка на Unsplash в `styles.css` (`.hero`), замените на своё изображение через `{% static %}`, если нужно оффлайн-решение.
-- **Палитра** — переменные в начале `styles.css` (`--color-accent`, `--color-fixer` и т.д.).
+---
+
+## Тестирование
+
+Проект покрыт автоматическими тестами.
+
+```bash
+python manage.py test
+```
+
+```
+Found 21 test(s).
+
+Ran 21 tests
+
+OK
+```
+
+---
+
+## Структура проекта
+
+```
+snapx/
+├── models.py
+├── forms.py
+├── views.py
+├── urls.py
+├── tests.py
+├── templates/
+└── static/
+```
+
+---
