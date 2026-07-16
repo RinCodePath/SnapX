@@ -54,9 +54,6 @@ class RegisterForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Проставляем CSS-классы и русские подписи для встроенных полей
-        # username/password1/password2 — по умолчанию UserCreationForm
-        # отдаёт их подписи на английском независимо от LANGUAGE_CODE.
         russian_labels = {
             'username': 'Имя пользователя',
             'password1': 'Пароль',
