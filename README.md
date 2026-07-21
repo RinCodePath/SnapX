@@ -66,20 +66,10 @@ SnapX позволяет пользователям регистрировать
 
 ## Запуск проекта
 
-```bash
-git clone https://github.com/USERNAME/snapx.git
-cd snapx
-
-python -m venv .venv
-
-source .venv/bin/activate
-
-pip install -r requirements.txt
-
-python manage.py migrate
-
-python manage.py runserver
-```
+1. Клонировать репозиторий
+2. Установить зависимости: `pip install -r requirements.txt`
+3. Применить миграции: `python manage.py migrate`
+4. Запустить сервер: `python manage.py runserver`
 
 После запуска откройте
 
